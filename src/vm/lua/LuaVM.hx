@@ -14,8 +14,11 @@ class LuaException extends Exception {}
 class LuaVM {
 	public var version(default, never):String = Lua.version();
 
+	public var errorHandler:String->Void;
+
 	public var state:State;
 	static var funcs = [];
+
 
 	public function new() {
 		state = LuaL.newstate();
@@ -34,17 +37,17 @@ class LuaVM {
 
 	public function run(script:String, ?globals:DynamicAccess<Any>):Any {
 		if(globals != null) for(key in globals.keys()) setGlobalVar(key, globals.get(key));
-		if(LuaL.dostring(state,script)!=0)
+		if(LuaL.dostring(state,script)!=0){
 			throw new LuaException(getErrorMessage(state));
-		else
+		}else
 			return getReturnValues(state);
 	}
 
 	public function runFile(script:String, ?globals:DynamicAccess<Any>):Any {
 		if(globals != null) for(key in globals.keys()) setGlobalVar(key, globals.get(key));
-		if(LuaL.dofile(state,script)!=0)
+		if(LuaL.dofile(state,script)!=0){
 			throw new LuaException(getErrorMessage(state));
-		else
+		}else
 			return getReturnValues(state);
 	}
 
@@ -56,11 +59,12 @@ class LuaVM {
 			if(Lua.isfunction(state,-1)==true){
 				for(arg in args) Convert.toLua(state, arg);
 				result = Lua.pcall(state, args.length, 1, 0);
-
 				if(result!=0){
 					var err = getErrorMessage(state);
-					LuaL.error(state,err);
-					trace("LUA ERROR: " + err);
+					if(errorHandler!=null){
+						errorHandler(err);
+					}
+					//LuaL.error(state,err);
 				}else{
 					retValue = convert(Convert.fromLua(state,-1),type);
 				}
