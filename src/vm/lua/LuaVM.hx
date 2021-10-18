@@ -73,9 +73,30 @@ class LuaVM {
 			trace(e);
 		}
 		return retValue;
+	}
 
-
-
+	public function callF(name:String, func:Void->Int, ?type: String):Any {
+		var retValue:Any = null;
+		var result : Any = null;
+		try{
+			Lua.getglobal(state, name);
+			if(Lua.isfunction(state,-1)==true){
+				var argC:Int = func();
+				result = Lua.pcall(state, argC, 1, 0);
+				if(result!=0){
+					var err = getErrorMessage(state);
+					if(errorHandler!=null){
+						errorHandler(err);
+					}
+					//LuaL.error(state,err);
+				}else{
+					retValue = convert(Convert.fromLua(state,-1),type);
+				}
+			}
+		}catch(e:Any){
+			trace(e);
+		}
+		return retValue;
 	}
 
 	// https://notabug.org/endes/haxe-lua-plugins/src/master/src/beartek/lua_plugins/Luaplugin.hx
