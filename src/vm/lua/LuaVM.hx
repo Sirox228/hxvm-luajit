@@ -9,6 +9,7 @@ import lime.app.Application;
 import openfl.Lib;
 import sys.FileSystem;
 import sys.io.File;
+using StringTools;
 
 import haxe.DynamicAccess;
 
