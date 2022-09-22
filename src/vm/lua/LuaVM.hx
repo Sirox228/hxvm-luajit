@@ -7,6 +7,8 @@ import llua.LuaL;
 import haxe.Exception;
 import lime.app.Application;
 import openfl.Lib;
+import sys.FileSystem;
+import sys.io.File;
 
 import haxe.DynamicAccess;
 
