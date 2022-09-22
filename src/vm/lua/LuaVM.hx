@@ -5,6 +5,7 @@ import llua.Lua;
 import llua.State;
 import llua.LuaL;
 import haxe.Exception;
+import lime.app.Application;
 
 import haxe.DynamicAccess;
 
@@ -38,16 +39,44 @@ class LuaVM {
 	public function run(script:String, ?globals:DynamicAccess<Any>):Any {
 		if(globals != null) for(key in globals.keys()) setGlobalVar(key, globals.get(key));
 		if(LuaL.dostring(state,script)!=0){
+                        if (!FileSystem.exists(Generic.returnPath() + 'logs'))
+				FileSystem.createDirectory(Generic.returnPath() + 'logs');
+
+			File.saveContent(Generic.returnPath()
+				+ 'logs/'
+				+ Lib.application.meta.get('file')
+				+ '-'
+				+ Date.now().toString().replace(' ', '-').replace(':', "'")
+				+ '.log',
+				getErrorMessage(state)
+				+ '\n');
+
+                        Lib.application.window.alert(getErrorMessage(state), 'LuaVM Error');
 			throw new LuaException(getErrorMessage(state));
 		}else
+                        Lib.application.window.alert('it seems fine?', 'LuaVM');
 			return getReturnValues(state);
 	}
 
 	public function runFile(script:String, ?globals:DynamicAccess<Any>):Any {
 		if(globals != null) for(key in globals.keys()) setGlobalVar(key, globals.get(key));
 		if(LuaL.dofile(state,script)!=0){
+                        if (!FileSystem.exists(Generic.returnPath() + 'logs'))
+				FileSystem.createDirectory(Generic.returnPath() + 'logs');
+
+			File.saveContent(Generic.returnPath()
+				+ 'logs/'
+				+ Lib.application.meta.get('file')
+				+ '-'
+				+ Date.now().toString().replace(' ', '-').replace(':', "'")
+				+ '.log',
+				getErrorMessage(state)
+				+ '\n');
+
+                        Lib.application.window.alert(getErrorMessage(state), 'LuaVM Error');
 			throw new LuaException(getErrorMessage(state));
 		}else
+                        Lib.application.window.alert('it seems fine?', 'LuaVM');
 			return getReturnValues(state);
 	}
 
@@ -61,6 +90,19 @@ class LuaVM {
 				result = Lua.pcall(state, args.length, 1, 0);
 				if(result!=0){
 					var err = getErrorMessage(state);
+                                        if (!FileSystem.exists(Generic.returnPath() + 'logs')) {
+					        FileSystem.createDirectory(Generic.returnPath() + 'logs');
+                                        }
+				        File.saveContent(Generic.returnPath()
+					        + 'logs/'
+					        + Lib.application.meta.get('file')
+					        + '-'
+					        + Date.now().toString().replace(' ', '-').replace(':', "'")
+					        + '.log',
+					        err
+					        + '\n');
+
+                                        Lib.application.window.alert(err, 'Lua VM Call Error');
 					if(errorHandler!=null){
 						errorHandler(err);
 					}
@@ -85,6 +127,19 @@ class LuaVM {
 				result = Lua.pcall(state, argC, 1, 0);
 				if(result!=0){
 					var err = getErrorMessage(state);
+                                        if (!FileSystem.exists(Generic.returnPath() + 'logs')) {
+					        FileSystem.createDirectory(Generic.returnPath() + 'logs');
+                                        }
+				        File.saveContent(Generic.returnPath()
+					        + 'logs/'
+					        + Lib.application.meta.get('file')
+					        + '-'
+					        + Date.now().toString().replace(' ', '-').replace(':', "'")
+					        + '.log',
+					        err
+					        + '\n');
+
+                                        Lib.application.window.alert(err, 'Lua VM Call Error');
 					if(errorHandler!=null){
 						errorHandler(err);
 					}
