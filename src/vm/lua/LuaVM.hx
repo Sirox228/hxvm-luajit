@@ -6,6 +6,7 @@ import llua.State;
 import llua.LuaL;
 import haxe.Exception;
 import lime.app.Application;
+import openfl.Lib;
 
 import haxe.DynamicAccess;
 
